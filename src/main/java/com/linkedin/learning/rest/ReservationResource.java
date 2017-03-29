@@ -1,7 +1,14 @@
 package com.linkedin.learning.rest;
 
+import com.linkedin.learning.convertor.RoomEntityToReservableRoomResponseConverter;
+import com.linkedin.learning.entity.RoomEntity;
 import com.linkedin.learning.model.request.ReservationRequest;
-import com.linkedin.learning.model.response.ReservationResponse;
+import com.linkedin.learning.model.response.ReservableRoomResponse;
+import com.linkedin.learning.repository.PageableRoomRepository;
+import com.linkedin.learning.repository.RoomRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,34 +27,52 @@ import java.time.LocalDate;
 @RequestMapping(ResourceConstants.ROOM_RESERVATION_V1)
 public class ReservationResource {
 
-    @RequestMapping(path = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<ReservationResponse> getAvailableRooms(
-            @RequestParam(name = "checkin")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate checkin,
-            @RequestParam(name = "checkout")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate checkout) {
+    @Autowired
+    PageableRoomRepository pageableRoomRepository;
 
-        return new ResponseEntity<>(new ReservationResponse(), HttpStatus.OK);
+    @Autowired
+    RoomRepository roomRepository;
+
+    @RequestMapping(path ="", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Page<ReservableRoomResponse> getAvailableRooms (
+            @RequestParam(value = "checkin")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                    LocalDate checkin,
+            @RequestParam(value = "checkout")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                    LocalDate checkout, Pageable pageable) {
+
+        Page<RoomEntity> roomEntityList = pageableRoomRepository.findAll(pageable);
+
+        return roomEntityList.map(new RoomEntityToReservableRoomResponseConverter());
+    }
+
+    @RequestMapping(path = "/{roomId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<RoomEntity> getRoomById(
+            @PathVariable
+                    Long roomId) {
+
+        RoomEntity roomEntity = roomRepository.findById(roomId);
+
+        return new ResponseEntity<>(roomEntity, HttpStatus.OK);
     }
 
     @RequestMapping(path = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<ReservationResponse> createReservation(
+    public ResponseEntity<ReservableRoomResponse> createReservation(
             @RequestBody
             ReservationRequest reservationRequest) {
 
-        return new ResponseEntity<>(new ReservationResponse(), HttpStatus.CREATED);
+        return new ResponseEntity<>(new ReservableRoomResponse(), HttpStatus.CREATED);
     }
 
     @RequestMapping(path = "", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<ReservationResponse> updateReservation(
+    public ResponseEntity<ReservableRoomResponse> updateReservation(
             @RequestBody
             ReservationRequest reservationRequest) {
 
-        return new ResponseEntity<>(new ReservationResponse(), HttpStatus.OK);
+        return new ResponseEntity<>(new ReservableRoomResponse(), HttpStatus.OK);
     }
 
     @RequestMapping(path = "/{reservationId}", method = RequestMethod.DELETE)

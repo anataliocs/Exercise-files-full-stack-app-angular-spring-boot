@@ -60,5 +60,5 @@ public class RoomEntity {
 	public void setPrice(String price) {
 		this.price = price;
 	}
-	
+
 }
