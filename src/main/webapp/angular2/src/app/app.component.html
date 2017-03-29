@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.css">
+
 <header id="intro" style="display: block;">
   <article class="fullheight" style="height: 568px;">
     <div class="hgroup">
@@ -19,16 +21,50 @@
 <main id="wrapper">
   <div class="scene" id="welcome">
     <article class="content">
-      <div class="gallery">
-        <img src="src/app/images/intro_room.jpg" alt="Intro Gallery Room Sample Pictures">
-        <img src="src/app/images/intro_pool.jpg" alt="Intro Gallery Pool Sample Pictures">
-        <img src="src/app/images/intro_dining.jpg" alt="Intro Gallery Dining Sample Pictures">
-        <img src="src/app/images/intro_attractions.jpg" alt="Intro Gallery Attractions Sample Pictures">
-        <img class="hidesm" src="src/app/images/intro_wedding.jpg" alt="Intro Gallery Dining Sample Pictures">
-      </div>
-      <h1>Book a Room</h1>
 
-      {{title}}
+      <div class="row">
+        <div class="col-12">
+          <div class="gallery">
+            <img src="src/app/images/intro_room.jpg"
+                 alt="Intro Gallery Room Sample Pictures"> <img
+            src="src/app/images/intro_pool.jpg"
+            alt="Intro Gallery Pool Sample Pictures"> <img
+            src="src/app/images/intro_dining.jpg"
+            alt="Intro Gallery Dining Sample Pictures"> <img
+            src="src/app/images/intro_attractions.jpg"
+            alt="Intro Gallery Attractions Sample Pictures"> <img
+            class="hidesm" src="src/app/images/intro_wedding.jpg"
+            alt="Intro Gallery Dining Sample Pictures">
+          </div>
+          <h1>Book a Room</h1>
+
+          <form class="form-horizontal" [formGroup]="roomsearch"
+                (ngSubmit)="onSubmit(roomsearch)">
+
+            <div class="form-group">
+              <label for="checkin" class="col-4">Check-In:</label>
+              <div class="col-8">
+                <input id="checkin" type="date" class="form-control"
+                       formControlName="checkin">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="checkin" class="col-4">Check-Out:</label>
+              <div class="col-8">
+                <input id="checkout" type="date" class="form-control"
+                       formControlName="checkout">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="col-offset-2 col-10">
+                <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+              </div>
+            </div>
+
+          </form>
+        </div>
+      </div>
 
     </article>
   </div><!-- welcome -->
