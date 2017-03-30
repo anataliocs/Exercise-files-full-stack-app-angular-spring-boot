@@ -1,5 +1,7 @@
 package com.linkedin.learning.config;
 
+import com.linkedin.learning.convertor.ReservationEntityToReservationResponseConverter;
+import com.linkedin.learning.convertor.ReservationRequestToReservationEntityConverter;
 import com.linkedin.learning.convertor.RoomEntityToReservableRoomResponseConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +17,8 @@ import java.util.Set;
         private Set<Converter> getConverters() {
                 Set<Converter> converters = new HashSet<Converter>();
                 converters.add(new RoomEntityToReservableRoomResponseConverter());
+                converters.add(new ReservationRequestToReservationEntityConverter());
+                converters.add(new ReservationEntityToReservationResponseConverter());
 
                 return converters;
         }
