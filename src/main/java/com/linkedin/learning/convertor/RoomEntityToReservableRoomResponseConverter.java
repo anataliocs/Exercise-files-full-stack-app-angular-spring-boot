@@ -15,6 +15,8 @@ public class RoomEntityToReservableRoomResponseConverter implements Converter<Ro
 		// TODO Auto-generated method stub
 		
 		ReservableRoomResponse reservationResponse = new ReservableRoomResponse();
+		if(null != source.getId())
+			reservationResponse.setId(source.getId());
 		reservationResponse.setRoomNumber(source.getRoomNumber());
 		reservationResponse.setPrice( Integer.valueOf(source.getPrice()) );
 		
