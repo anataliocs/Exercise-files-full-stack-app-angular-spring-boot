@@ -1,12 +1,16 @@
 package com.linkedin.learning.rest;
 
 import com.linkedin.learning.convertor.RoomEntityToReservableRoomResponseConverter;
+import com.linkedin.learning.entity.ReservationEntity;
 import com.linkedin.learning.entity.RoomEntity;
 import com.linkedin.learning.model.request.ReservationRequest;
 import com.linkedin.learning.model.response.ReservableRoomResponse;
+import com.linkedin.learning.model.response.ReservationResponse;
 import com.linkedin.learning.repository.PageableRoomRepository;
+import com.linkedin.learning.repository.ReservationRepository;
 import com.linkedin.learning.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -27,11 +31,17 @@ import java.time.LocalDate;
 @RequestMapping(ResourceConstants.ROOM_RESERVATION_V1)
 public class ReservationResource {
 
-    @Autowired
-    PageableRoomRepository pageableRoomRepository;
+        @Autowired
+        PageableRoomRepository pageableRoomRepository;
 
-    @Autowired
-    RoomRepository roomRepository;
+        @Autowired
+        RoomRepository roomRepository;
+
+        @Autowired
+        ReservationRepository reservationRepository;
+
+        @Autowired
+        ConversionService conversionService;
 
     @RequestMapping(path ="", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Page<ReservableRoomResponse> getAvailableRooms (
@@ -59,11 +69,23 @@ public class ReservationResource {
 
     @RequestMapping(path = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<ReservableRoomResponse> createReservation(
+    public ResponseEntity<ReservationResponse> createReservation(
             @RequestBody
             ReservationRequest reservationRequest) {
 
-        return new ResponseEntity<>(new ReservableRoomResponse(), HttpStatus.CREATED);
+            ReservationEntity reservationEntity = conversionService.convert(reservationRequest, ReservationEntity.class);
+            reservationRepository.save(reservationEntity);
+
+            RoomEntity roomEntity = roomRepository.findById(reservationRequest.getRoomId());
+            roomEntity.addReservationEntity(reservationEntity);
+            roomRepository.save(roomEntity);
+            reservationEntity.setRoomEntity(roomEntity);
+
+            ReservationResponse reservationResponse =
+                    conversionService.convert(reservationEntity, ReservationResponse.class);
+
+
+            return new ResponseEntity<>(reservationResponse, HttpStatus.CREATED);
     }
 
     @RequestMapping(path = "", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE,

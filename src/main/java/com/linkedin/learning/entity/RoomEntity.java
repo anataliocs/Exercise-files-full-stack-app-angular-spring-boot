@@ -26,9 +26,16 @@ public class RoomEntity {
 
 	@NotNull
 	private String price;
-	
+
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+	private List<ReservationEntity> reservationEntityList;
+
 	public RoomEntity() {
-		super();
+	}
+
+	public RoomEntity(Integer roomNumber, String price) {
+		this.roomNumber = roomNumber;
+		this.price = price;
 	}
 
 	public Long getId() {
@@ -37,12 +44,6 @@ public class RoomEntity {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public RoomEntity(Integer roomNumber, String price) {
-		super();
-		this.roomNumber = roomNumber;
-		this.price = price;
 	}
 
 	public Integer getRoomNumber() {
@@ -59,6 +60,21 @@ public class RoomEntity {
 
 	public void setPrice(String price) {
 		this.price = price;
+	}
+
+	public List<ReservationEntity> getReservationEntityList() {
+		return reservationEntityList;
+	}
+
+	public void setReservationEntityList(List<ReservationEntity> reservationEntityList) {
+		this.reservationEntityList = reservationEntityList;
+	}
+
+	public void addReservationEntity(ReservationEntity reservationEntity) {
+		if (null == reservationEntityList)
+			reservationEntityList = new ArrayList<>();
+
+		reservationEntityList.add(reservationEntity);
 	}
 
 }
